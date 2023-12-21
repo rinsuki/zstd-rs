@@ -114,7 +114,7 @@ pub fn from_continuous(
     }
 
     let mut result = Vec::with_capacity(max_size);
-    zstd_safe::train_from_buffer(&mut result, sample_data, sample_sizes)
+    zstd_safe::dict::train_from_buffer(&mut result, sample_data, sample_sizes)
         .map_err(map_error_code)?;
     Ok(result)
 }

@@ -27,6 +27,10 @@ extern crate std;
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "zdict_builder")]
+#[cfg_attr(feature = "doc-cfg", doc(cfg(feature = "zdict_builder")))]
+pub mod dict;
+
 // Re-export zstd-sys
 pub use zstd_sys;
 
@@ -2156,29 +2160,6 @@ pub enum DParameter {
     #[cfg(feature = "experimental")]
     #[cfg_attr(feature = "doc-cfg", doc(cfg(feature = "experimental")))]
     RefMultipleDDicts(bool),
-}
-
-/// Wraps the `ZDICT_trainFromBuffer()` function.
-#[cfg(feature = "zdict_builder")]
-#[cfg_attr(feature = "doc-cfg", doc(cfg(feature = "zdict_builder")))]
-pub fn train_from_buffer<C: WriteBuf + ?Sized>(
-    dict_buffer: &mut C,
-    samples_buffer: &[u8],
-    samples_sizes: &[usize],
-) -> SafeResult {
-    assert_eq!(samples_buffer.len(), samples_sizes.iter().sum());
-
-    unsafe {
-        dict_buffer.write_from(|buffer, capacity| {
-            parse_code(zstd_sys::ZDICT_trainFromBuffer(
-                buffer,
-                capacity,
-                ptr_void(samples_buffer),
-                samples_sizes.as_ptr(),
-                samples_sizes.len() as u32,
-            ))
-        })
-    }
 }
 
 /// Wraps the `ZDICT_getDictID()` function.
